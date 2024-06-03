@@ -14,11 +14,11 @@ docker push bidease/pwd
 Generate a hash to log into the Clickhouse:
 
 ```shell
-docker run --rm -it bidease/pwd sh -c "echo -n 'Password: '; read -s pwd; echo; htpasswd -bnBC 10 '' $pwd | tr -d ':'"
+docker run --rm -it bidease/pwd bcrypt
 ```
 
 Generate a hash to log into the OS (ssh):
 
 ```shell
-docker run -it --rm bidease/pwd mkpasswd -m sha512
+docker run --rm -it bidease/pwd sha512
 ```
