@@ -1,11 +1,21 @@
 #!/bin/sh
 
-function bcrypt() {
-  echo -n 'Password: ' && read -s pwd && echo && echo -n $pwd | htpasswd -bnBC 10 '' $pwd | tr -d ':'
+bcrypt() {
+  printf 'Password: '
+  stty -echo
+  read -r PWD
+  stty echo
+  printf '\n'
+  printf '%s' "$PWD" | htpasswd -bnBC 10 '' "$PWD" | tr -d ':'
 }
 
-function sha512() {
-  echo -n 'Password: ' && read -s pwd && echo && echo $pwd | mkpasswd -m sha512
+sha512() {
+  printf 'Password: '
+  stty -echo
+  read -r PWD
+  stty echo
+  printf '\n'
+  printf '%s' "$PWD" | mkpasswd -m sha512
 }
 
 case $1 in
