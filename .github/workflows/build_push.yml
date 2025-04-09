@@ -6,6 +6,8 @@ on:
     paths:
       - 'Dockerfile'
       - 'entrypoint.sh'
+      - 'README.md'
+      - 'LICENSE'
 
 env:
   REGISTRY: docker.io
