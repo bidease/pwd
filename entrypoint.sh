@@ -1,12 +1,30 @@
 #!/bin/sh
 
+bcrypt_hash() {
+  printf '%s' "$1" | htpasswd -bnBC 12 '' "$1" | tr -d ':'
+}
+
+sha512_hash() {
+  printf '%s' "$1" | mkpasswd -m sha512
+}
+
 bcrypt() {
+  if [ -n "$1" ]; then
+    bcrypt_hash "$1"
+    return
+  fi
+
   while true; do
     printf 'Password: '
     stty -echo
     read -r PWD
     stty echo
     printf '\n'
+
+    if [ -z "$PWD" ]; then
+      printf 'Password cannot be empty. Please try again.\n\n'
+      continue
+    fi
 
     printf 'Confirm password: '
     stty -echo
@@ -15,7 +33,7 @@ bcrypt() {
     printf '\n'
 
     if [ "$PWD" = "$PWD2" ]; then
-      printf '%s' "$PWD" | htpasswd -bnBC 10 '' "$PWD" | tr -d ':'
+      bcrypt_hash "$PWD"
       break
     else
       printf 'Passwords do not match. Please try again.\n\n'
@@ -24,12 +42,22 @@ bcrypt() {
 }
 
 sha512() {
+  if [ -n "$1" ]; then
+    sha512_hash "$1"
+    return
+  fi
+
   while true; do
     printf 'Password: '
     stty -echo
     read -r PWD
     stty echo
     printf '\n'
+
+    if [ -z "$PWD" ]; then
+      printf 'Password cannot be empty. Please try again.\n\n'
+      continue
+    fi
 
     printf 'Confirm password: '
     stty -echo
@@ -38,7 +66,7 @@ sha512() {
     printf '\n'
 
     if [ "$PWD" = "$PWD2" ]; then
-      printf '%s' "$PWD" | mkpasswd -m sha512
+      sha512_hash "$PWD"
       break
     else
       printf 'Passwords do not match. Please try again.\n\n'
@@ -48,13 +76,15 @@ sha512() {
 
 case $1 in
   bcrypt )
-    bcrypt;;
+    bcrypt "$2";;
   sha512 )
-    sha512;;
+    sha512 "$2";;
   help | * )
-    echo 'Usage: docker run --rm -it <option>'
+    echo 'Usage: docker run --rm -it <option> [password]'
     echo 'Options:'
-    echo '  bcrypt: Generate bcrypt password hash'
-    echo '  sha512: Generate sha512 password hash'
+    echo '  bcrypt [password]: Generate bcrypt password hash'
+    echo '  sha512 [password]: Generate sha512 password hash'
+    echo ''
+    echo 'If [password] is provided, the hash is generated non-interactively.'
     exit
 esac

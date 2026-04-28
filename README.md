@@ -29,6 +29,10 @@ docker pull bidease/pwd
 
 ## Usage
 
+### Interactive mode
+
+You will be prompted for the password twice (input is hidden).
+
 Generate bcrypt hash
 
 ```bash
@@ -52,6 +56,17 @@ Or
 ```bash
 docker run --rm -it bidease/pwd sha512
 ```
+
+### Non-interactive mode
+
+Pass the password as a second argument. No TTY required, no confirmation prompt — useful for scripts and CI.
+
+```bash
+docker run --rm bidease/pwd bcrypt 'mypassword'
+docker run --rm bidease/pwd sha512 'mypassword'
+```
+
+> Note: the password will be visible in your shell history and process list. Prefer the interactive mode for sensitive credentials.
 
 ## Requirements
 
