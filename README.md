@@ -68,6 +68,17 @@ docker run --rm bidease/pwd sha512 'mypassword'
 
 > Note: the password will be visible in your shell history and process list. Prefer the interactive mode for sensitive credentials.
 
+### Stdin mode
+
+Pipe the password to the container. No TTY required, no confirmation prompt, and the password does not appear in the process list.
+
+```bash
+echo -n 'mypassword' | docker run --rm -i bidease/pwd bcrypt
+echo -n 'mypassword' | docker run --rm -i bidease/pwd sha512
+```
+
+> The `-i` flag is required so Docker forwards stdin into the container. Use `echo -n` (or `printf '%s'`) to avoid a trailing newline in the password.
+
 ## Requirements
 
 - Docker

@@ -8,9 +8,23 @@ sha512_hash() {
   printf '%s' "$1" | mkpasswd -m sha512
 }
 
+read_stdin() {
+  IFS= read -r PWD
+  if [ -z "$PWD" ]; then
+    printf 'Password cannot be empty.\n' >&2
+    exit 1
+  fi
+}
+
 bcrypt() {
   if [ -n "$1" ]; then
     bcrypt_hash "$1"
+    return
+  fi
+
+  if [ ! -t 0 ]; then
+    read_stdin
+    bcrypt_hash "$PWD"
     return
   fi
 
@@ -44,6 +58,12 @@ bcrypt() {
 sha512() {
   if [ -n "$1" ]; then
     sha512_hash "$1"
+    return
+  fi
+
+  if [ ! -t 0 ]; then
+    read_stdin
+    sha512_hash "$PWD"
     return
   fi
 
@@ -86,5 +106,6 @@ case $1 in
     echo '  sha512 [password]: Generate sha512 password hash'
     echo ''
     echo 'If [password] is provided, the hash is generated non-interactively.'
+    echo 'If stdin is not a TTY, the password is read from stdin (e.g. echo -n pw | ...).'
     exit
 esac
